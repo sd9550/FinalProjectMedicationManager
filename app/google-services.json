@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "576776510388",
+    "project_id": "finalprojectmedicationma-89909",
+    "storage_bucket": "finalprojectmedicationma-89909.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576776510388:android:949853e89a4499c3fdb0e1",
+        "android_client_info": {
+          "package_name": "com.example.finalprojectmedicationmanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPQIRr2fxHLTgLLlu2C-X3m6iZuDQ6AkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
