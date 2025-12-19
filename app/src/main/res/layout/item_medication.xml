@@ -65,7 +65,7 @@
                 android:id="@+id/editButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit"
+                android:text="Set Reminder"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:layout_marginEnd="8dp"
@@ -79,6 +79,15 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:backgroundTint="@color/red"/>
+
+            <TextView
+                android:id="@+id/reminderStatusTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reminder: 08:00 (MON, WED, FRI)"
+                android:textSize="12sp"
+                android:textColor="@color/green"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

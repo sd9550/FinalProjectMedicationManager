@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="timePickerButton" type="id" />
+    <item name="daysContainer" type="id" />
+    <item name="selectedTimeTextView" type="id" />
+    <item name="reminderToggle" type="id" />
+    <item name="timeButton" type="id" />
+    <item name="setButton" type="id" />
+    <item name="satButton" type="id" />
+    <item name="friButton" type="id" />
+    <item name="thuButton" type="id" />
+    <item name="wedButton" type="id" />
+    <item name="tueButton" type="id" />
+    <item name="monButton" type="id" />
+    <item name="sunButton" type="id" />
+</resources>

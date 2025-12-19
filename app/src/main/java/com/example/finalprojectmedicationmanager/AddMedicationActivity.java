@@ -2,15 +2,12 @@ package com.example.finalprojectmedicationmanager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.finalprojectmedicationmanager.data.FirebaseMedicationRepository;
 import com.example.finalprojectmedicationmanager.models.Medication;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class AddMedicationActivity extends AppCompatActivity {
 
@@ -19,18 +16,14 @@ public class AddMedicationActivity extends AppCompatActivity {
             prescriberEditText;
     private Button saveButton, cancelButton;
 
-    private FirebaseAuth mAuth;
-    private DatabaseReference databaseReference;
-    private FirebaseUser currentUser;
+    private FirebaseMedicationRepository firebaseMedicationRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_medication);
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference("medications");
+        firebaseMedicationRepository = new FirebaseMedicationRepository();
 
         nameEditText = findViewById(R.id.nameEditText);
         dosageEditText = findViewById(R.id.dosageEditText);
@@ -62,28 +55,46 @@ public class AddMedicationActivity extends AppCompatActivity {
             return;
         }
 
-        if (currentUser == null) {
+        if (firebaseMedicationRepository.getCurrentUser() == null) {
             Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String medicationId = databaseReference.push().getKey();
+        String medicationId = firebaseMedicationRepository.getDatabaseReference().push().getKey();
         Medication medication = new Medication(name, dosage, frequency, instructions,
                 startDate, endDate, prescriber,
-                currentUser.getUid());
+                firebaseMedicationRepository.getCurrentUser().getUid());
 
-        if (medicationId != null) {
-            databaseReference.child(medicationId).setValue(medication)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(AddMedicationActivity.this,
-                                "Medication saved successfully", Toast.LENGTH_SHORT).show();
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(AddMedicationActivity.this,
-                                "Failed to save medication: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    });
-        }
+        // Save medication to Firebase
+        firebaseMedicationRepository.saveMedication(medication, new FirebaseMedicationRepository.Callback() {
+
+            @Override
+            public void onSuccess(Object result) {
+                Toast.makeText(AddMedicationActivity.this,
+                        "Medication saved successfully", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(AddMedicationActivity.this,
+                        "Failed to save medication: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess() {
+                Toast.makeText(AddMedicationActivity.this,
+                        "Medication saved successfully", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AddMedicationActivity.this,
+                        "Failed to save medication", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 }

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.finalprojectmedicationmanager.models.Medication;
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.List;
+import java.util.ArrayList;
 
 public class MedicationListAdapter extends RecyclerView.Adapter<MedicationListAdapter.ViewHolder> {
 
@@ -60,12 +62,7 @@ public class MedicationListAdapter extends RecyclerView.Adapter<MedicationListAd
 
         // Edit button click
         holder.editButton.setOnClickListener(v -> {
-            // Launch edit activity
-            android.content.Context context = v.getContext();
-            android.content.Intent intent = new Intent(context, MedicationDetailActivity.class);
-            intent.putExtra("medication", (Parcelable) medication);
-            intent.putExtra("medicationId", medication.getId());
-            context.startActivity(intent);
+            showSimpleReminderPopup(v.getContext(), medication.getName());
         });
 
         // Delete button click
@@ -88,6 +85,94 @@ public class MedicationListAdapter extends RecyclerView.Adapter<MedicationListAd
             // Show details dialog or expand view
             showMedicationDetails(v.getContext(), medication);
         });
+
+    }
+
+    private void showSimpleReminderPopup(android.content.Context context, String medicationName) {
+        // Inflate the popup layout
+        View dialogView = LayoutInflater.from(context)
+                .inflate(R.layout.dialog_simple_reminder, null);
+
+        // Get references to buttons
+        Button timeButton = dialogView.findViewById(R.id.timeButton);
+        Button sunButton = dialogView.findViewById(R.id.sunButton);
+        Button monButton = dialogView.findViewById(R.id.monButton);
+        Button tueButton = dialogView.findViewById(R.id.tueButton);
+        Button wedButton = dialogView.findViewById(R.id.wedButton);
+        Button thuButton = dialogView.findViewById(R.id.thuButton);
+        Button friButton = dialogView.findViewById(R.id.friButton);
+        Button satButton = dialogView.findViewById(R.id.satButton);
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        Button setButton = dialogView.findViewById(R.id.setButton);
+
+        // List to track selected days
+        List<String> selectedDays = new ArrayList<>();
+
+        // Day button click listeners - toggle selection
+        View.OnClickListener dayClickListener = v -> {
+            Button dayButton = (Button) v;
+            String dayText = dayButton.getText().toString();
+
+            if (selectedDays.contains(dayText)) {
+                // Deselect
+                selectedDays.remove(dayText);
+                dayButton.setBackgroundTintList(
+                        android.content.res.ColorStateList.valueOf(0xFFE0E0E0)
+                );
+            } else {
+                // Select
+                selectedDays.add(dayText);
+                dayButton.setBackgroundTintList(
+                        android.content.res.ColorStateList.valueOf(0xFF2196F3) // Blue color
+                );
+            }
+        };
+
+        // Set day button click listeners
+        sunButton.setOnClickListener(dayClickListener);
+        monButton.setOnClickListener(dayClickListener);
+        tueButton.setOnClickListener(dayClickListener);
+        wedButton.setOnClickListener(dayClickListener);
+        thuButton.setOnClickListener(dayClickListener);
+        friButton.setOnClickListener(dayClickListener);
+        satButton.setOnClickListener(dayClickListener);
+
+        // Time button - opens time picker
+        timeButton.setOnClickListener(v -> {
+            // Simple time selection (no actual time picker for now)
+            String[] times = {"08:00 AM", "12:00 PM", "06:00 PM", "09:00 PM"};
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+            builder.setTitle("Select Time");
+            builder.setItems(times, (dialog, which) -> {
+                timeButton.setText(times[which]);
+            });
+            builder.show();
+        });
+
+        // Create the dialog
+        android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(context)
+                .setView(dialogView)
+                .create();
+
+        // Set button - just show a toast for now
+        setButton.setOnClickListener(v -> {
+            String time = timeButton.getText().toString();
+            String days = selectedDays.isEmpty() ? "No days selected" :
+                    String.join(", ", selectedDays);
+
+            Toast.makeText(context,
+                    "Reminder set for " + medicationName +
+                            "\nTime: " + time +
+                            "\nDays: " + days,
+                    Toast.LENGTH_LONG).show();
+
+            dialog.dismiss();
+        });
+
+        // Cancel button
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
     private void showMedicationDetails(android.content.Context context, Medication medication) {
@@ -119,12 +204,15 @@ public class MedicationListAdapter extends RecyclerView.Adapter<MedicationListAd
         builder.show();
     }
 
+
+
     @Override
     public int getItemCount() {
         return medicationList.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
+        public View optionsButton;
         TextView nameTextView, dosageTextView, frequencyTextView,
                 instructionsTextView, prescriberTextView;
         Button editButton, deleteButton;

@@ -1,5 +1,8 @@
 package com.example.finalprojectmedicationmanager.models;
 
+import java.util.Date;
+import java.util.List;
+
 public class Medication {
     private String id;
     private String name;
@@ -10,6 +13,12 @@ public class Medication {
     private String endDate;
     private String prescriber;
     private String userId;
+
+    // For notifications
+    private List<String> reminderDays; // e.g., ["MON", "TUE", "WED"]
+    private String reminderTime; // e.g., "08:00"
+    private boolean remindersEnabled;
+    private Date createdAt;
 
     public Medication() {
         // Required for Firebase
@@ -25,6 +34,8 @@ public class Medication {
         this.endDate = endDate;
         this.prescriber = prescriber;
         this.userId = userId;
+        this.createdAt = new Date();
+        this.remindersEnabled = false;
     }
 
     // Getters and setters
@@ -54,4 +65,13 @@ public class Medication {
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
+
+    public List<String> getReminderDays() { return reminderDays; }
+    public void setReminderDays(List<String> reminderDays) { this.reminderDays = reminderDays; }
+
+    public String getReminderTime() { return reminderTime; }
+    public void setReminderTime(String reminderTime) { this.reminderTime = reminderTime; }
+
+    public boolean isRemindersEnabled() { return remindersEnabled; }
+    public void setRemindersEnabled(boolean remindersEnabled) { this.remindersEnabled = remindersEnabled; }
 }
